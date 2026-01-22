@@ -1,37 +1,14 @@
-- name: Ensure group "{{ username }}" exists
-  ansible.builtin.group:
-    name: "{{ username }}"
-    state: present
-    gid: 2000
-
-- name: Ensure "{{ username }}" user exists and part of "{{ username }}" group
-  ansible.builtin.user:
-    name: "{{ username }}"
-    shell: /usr/bin/bash
-    group: "{{ username }}"
-    create_home: yes
-    password: '!'
-    uid: 2000
-
-- name: Run tasks for removing unwanted users from group "{{ username }}"
+- name: Run tasks for creating user and group "{{ ansible_username }}"
   ansible.builtin.include_role:
-    name: remove_unwanted_users_from_group
+    name: create_user
   vars:
-    group: "{{ username }}"
-    user_to_keep: " {{ username }} "
+    username: "{{ ansible_username }}"
+    ssh_public_key: " {{ ansible_ssh_public_key }} "
 
-- name: Allow "{{ username }}" group to use sudo
+- name: Allow "{{ ansible_username }}" group to use sudo
   ansible.builtin.lineinfile:
     dest: /etc/sudoers
     state: present
-    regexp: "^%{{ username }}"
-    line: "%{{ username }} ALL=(ALL) ALL"
+    regexp: "^%{{ ansible_username }}"
+    line: "%{{ ansible_username }} ALL=(ALL) ALL"
     validate: 'visudo -cf %s'
-
-- name: Set authorized key for SSH
-  ansible.posix.authorized_key:
-    user: "{{ username }}"
-    key: "{{ lookup('file', ssh_public_key) }}" 
-    state: present
-    exclusive: true
-    manage_dir: true # Already default but very important. Ensures .ssh directory exists with proper owner and permissions.

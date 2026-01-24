@@ -24,3 +24,8 @@
     backup: yes
     #validate: /usr/bin/fail2ban-client -d %s
   notify: Restart fail2ban
+
+
+- name: Mark UFW configured role as run
+  set_fact:
+    ufw_configured_run: true

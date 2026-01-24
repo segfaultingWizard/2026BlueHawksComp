@@ -24,3 +24,8 @@
     direction: routed
     state: enabled
   when: ansible_facts['os_family'] == 'Debian'
+
+
+- name: Mark UFW configured role as run
+  set_fact:
+    ufw_configured_run: true

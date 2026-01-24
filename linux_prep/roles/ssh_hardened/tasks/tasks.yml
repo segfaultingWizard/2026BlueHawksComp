@@ -44,6 +44,7 @@
 
 - ansible.builtin.import_role:
     name: ufw_configured
+  when: not ufw_configured_run | default(false)
 
 - name: UFW allow tcp port "{{ ssh_port }}" for SSH from "{{ linux_private_network_cidr }}"
   community.general.ufw:
@@ -58,6 +59,7 @@
 
 - ansible.builtin.import_role:
     name: firewalld_configured
+  when: not firewalld_configured_run | default(false)
 
 - name: Firewalld allow tcp port "{{ ssh_port }}" for SSH in internal zone
   ansible.posix.firewalld:
@@ -83,6 +85,7 @@
 
 - ansible.builtin.import_role:
     name: fail2ban_configured
+  when: not fail2ban_configured_run | default(false)
 
 - name: SSH fail2ban jail configured
   ansible.builtin.blockinfile:
